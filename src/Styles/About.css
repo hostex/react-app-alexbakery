@@ -1,0 +1,18 @@
+.About-us-block {
+    margin-top: 100px;
+}
+h3 {
+    font-size: clamp(20px, 2.5vw, 46px);
+    font-weight: bold;
+}
+.About-us-text {
+    font-size: clamp(16px, 2vw, 30px);
+    margin-top: clamp(20px, 3vw, 45px);
+    text-align: justify;
+}
+.About-us-texth {
+    margin-top: clamp(34px, 4vw, 80px);
+    font-size: 30px;
+    font-weight: bold;
+    font-size: clamp(16px, 2vw, 30px);
+}

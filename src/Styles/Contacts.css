@@ -1,0 +1,48 @@
+.contact-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: #C4AD92;
+  padding: clamp(16px, 3vw, 32px);
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  width: clamp(300px, 65vw, 900px);
+  margin: 0 auto;
+  gap: clamp(16px, 2vw, 32px);
+  font-family: sans-serif;
+  margin-top: clamp(24px, 5vw, 80px);
+}
+
+.contact-text {
+  flex: 1 1 clamp(250px, 40%, 500px);
+}
+
+.contact-text h2 {
+  margin-bottom: clamp(8px, 1vw, 16px);
+  font-size: clamp(18px, 2.5vw, 32px);
+}
+
+.contact-text p {
+  margin: clamp(6px, 1vw, 12px) 0;
+  font-size: clamp(14px, 1.5vw, 18px);
+}
+
+.contact-text a {
+  color: #333;
+  text-decoration: none;
+}
+
+.contact-text a:hover {
+  text-decoration: underline;
+}
+
+.contact-map {
+  flex: 1 1 clamp(250px, 45%, 350px);
+  height: clamp(180px, 30vw, 250px);
+  min-width: 250px;
+}
+
+.leaflet-control-attribution {
+    display: none !important;
+}
