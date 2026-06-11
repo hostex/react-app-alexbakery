@@ -1,100 +1,111 @@
 import React, { Component } from 'react';
-import { Container, Nav, Navbar } from 'react-bootstrap';
-import logo from '../assets/image 57.png';
-import { Link, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { Container, Nav, Navbar, Badge } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+import AuthModal from './AuthModal';
+import { useCart } from '../context/CartContext';
 
-import Home from '../Pages/Home';
-import Ourproducts from '../Pages/Ourproducts';
-import About from '../Pages/About';
-import Contacts from '../Pages/Contacts';
-import AuthModal from './AuthModal'; // 👈 ИЗМЕНИТЕ ЗДЕСЬ (было RegistrationForm)
+// Обертка для использования хука в класс-компоненте
+const HeaderWrapper = (props) => {
+  const { cart } = useCart();
+  return <Header {...props} cart={cart} />;
+};
 
-export default class Header extends Component {
+class Header extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            showAuth: false,  // 👈 ИЗМЕНИТЕ НА showAuth
+            showAuth: false,
             user: null
         };
     }
 
-    handleShowAuth = () => {  // 👈 ИЗМЕНИТЕ
+    handleShowAuth = () => {
         this.setState({ showAuth: true });
     }
 
-    handleCloseAuth = () => {  // 👈 ИЗМЕНИТЕ
+    handleCloseAuth = () => {
         this.setState({ showAuth: false });
     }
 
     handleLogin = (user) => {
         this.setState({ user: user, showAuth: false });
+        if (this.props.onLogin) {
+            this.props.onLogin(user);
+        }
     }
 
     handleLogout = () => {
-        localStorage.removeItem('user');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('userEmail');
         this.setState({ user: null });
+        if (this.props.onLogout) {
+            this.props.onLogout();
+        }
         alert('Вы вышли из системы');
     }
 
     componentDidMount() {
-        const savedUser = localStorage.getItem('user');
-        if (savedUser) {
-            this.setState({ user: JSON.parse(savedUser) });
+        const userId = localStorage.getItem('userId');
+        const userName = localStorage.getItem('userName');
+        if (userId) {
+            this.setState({ user: { id: parseInt(userId), name: userName } });
         }
     }
 
     render() {
         const { user } = this.state;
+        const { cart } = this.props;
+        const cartItemsCount = cart?.reduce((sum, item) => sum + item.quantity, 0) || 0;
         
         return (
             <>
-                <Router>
-                    <Navbar className="brown" sticky="top" collapseOnSelect expand="md" variant="light">
-                        <Container>
-                            <Navbar.Brand as={Link} to="/" >
-                                <img
-                                    src={logo}
-                                    height="30"
-                                    width="30"
-                                    className="d-inline-block align-top"
-                                    alt="Logo"
-                                />
-                            </Navbar.Brand>
-                            <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-                            <Navbar.Collapse id="responsive-navbar-nav">
-                                <Nav className="ms-auto">
-                                    <Nav.Link as={Link} to="/"> Главная </Nav.Link>
-                                    <Nav.Link as={Link} to="/about"> О нас </Nav.Link>
-                                    <Nav.Link as={Link} to="/ourproducts"> Наши изделия </Nav.Link>
-                                    <Nav.Link as={Link} to="/contacts"> Контакты </Nav.Link>
-                                    
-                                    {user ? (
-                                        <>
-                                            <Nav.Link style={{ color: '#5C3E2D' }}>
-                                                Привет, {user.name}!
-                                            </Nav.Link>
-                                            <Nav.Link onClick={this.handleLogout} style={{ cursor: 'pointer' }}>
-                                                Выйти
-                                            </Nav.Link>
-                                        </>
-                                    ) : (
-                                        <Nav.Link onClick={this.handleShowAuth} style={{ cursor: 'pointer' }}>
-                                            Войти
+                <Navbar className="brown" sticky="top" collapseOnSelect expand="md" variant="light">
+                    <Container>
+                        <Navbar.Brand as={Link} to="/" >
+                            <img
+                                src="/img/image 57.png"
+                                height="30"
+                                width="30"
+                                className="d-inline-block align-top"
+                                alt="Logo"
+                            />
+                        </Navbar.Brand>
+                        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+                        <Navbar.Collapse id="responsive-navbar-nav">
+                            <Nav className="ms-auto">
+                                <Nav.Link as={Link} to="/"> Главная </Nav.Link>
+                                <Nav.Link as={Link} to="/about"> О нас </Nav.Link>
+                                <Nav.Link as={Link} to="/ourproducts"> Наши изделия </Nav.Link>
+                                <Nav.Link as={Link} to="/contacts"> Контакты </Nav.Link>
+                                
+                                {user ? (
+                                    <>
+                                        <Nav.Link as={Link} to="/profile">
+                                            👤 {user.name}
                                         </Nav.Link>
-                                    )}
-                                </Nav>
-                            </Navbar.Collapse>
-                        </Container>
-                    </Navbar>
-                    <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/ourproducts" element={<Ourproducts />} />
-                        <Route path="/about" element={<About />} />
-                        <Route path="/contacts" element={<Contacts />} />
-                    </Routes>
-                </Router>
+                                        <Nav.Link as={Link} to="/cart">
+                                            🛒 Корзина
+                                            {cartItemsCount > 0 && (
+                                                <Badge bg="secondary" pill className="ms-1">
+                                                    {cartItemsCount}
+                                                </Badge>
+                                            )}
+                                        </Nav.Link>
+                                        <Nav.Link onClick={this.handleLogout} style={{ cursor: 'pointer' }}>
+                                            Выйти
+                                        </Nav.Link>
+                                    </>
+                                ) : (
+                                    <Nav.Link onClick={this.handleShowAuth} style={{ cursor: 'pointer' }}>
+                                        Войти
+                                    </Nav.Link>
+                                )}
+                            </Nav>
+                        </Navbar.Collapse>
+                    </Container>
+                </Navbar>
                 
-                {/* Используем AuthModal вместо RegistrationForm */}
                 {this.state.showAuth && (
                     <AuthModal 
                         onClose={this.handleCloseAuth}
@@ -105,3 +116,5 @@ export default class Header extends Component {
         )
     }
 }
+
+export default HeaderWrapper;

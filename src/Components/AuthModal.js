@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
-import '../Styles/AuthModal.css';
+import '../Styles/AuthModal.css';  // ✅ Импорт вашего CSS
 
 export default class AuthModal extends Component { 
     constructor(props) {
@@ -52,7 +52,7 @@ export default class AuthModal extends Component {
             return;
         }
 
-        this.setState({ isLoading: true });
+        this.setState({ isLoading: true, errors: {} });
 
         try {
             if (isLogin) {
@@ -65,14 +65,23 @@ export default class AuthModal extends Component {
                 const data = await response.json();
                 
                 if (data.success) {
+                    localStorage.setItem('userId', data.userId);
+                    localStorage.setItem('userName', data.name);
                     localStorage.setItem('user', JSON.stringify({
                         id: data.userId,
                         name: data.name,
                         email: email
                     }));
+                    
                     alert(`Добро пожаловать, ${data.name}!`);
-                    this.props.onLogin({ name: data.name, email: email });
-                    this.props.onClose();
+                    
+                    if (this.props.onLogin) {
+                        this.props.onLogin({ id: data.userId, name: data.name, email: email });
+                    }
+                    
+                    if (this.props.onClose) {
+                        this.props.onClose();
+                    }
                 } else {
                     this.setState({
                         errors: { general: data.error || 'Неверный email или пароль' }
@@ -106,7 +115,7 @@ export default class AuthModal extends Component {
         } catch (error) {
             console.error('Ошибка:', error);
             this.setState({
-                errors: { general: 'Ошибка соединения с сервером. Запустите backend: cd backend && node server.js' }
+                errors: { general: 'Ошибка соединения с сервером. Убедитесь, что бэкенд запущен на порту 5000' }
             });
         } finally {
             this.setState({ isLoading: false });

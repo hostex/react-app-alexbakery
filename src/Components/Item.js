@@ -1,16 +1,39 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { Card, Button } from 'react-bootstrap';
 
-export class Item extends Component {
-    render() {
-        return (
-            <div className='item'>
-                <img src={'./img/'+ this.props.item.img} />
-                <h2>{this.props.item.title}</h2>
-                <p>{this.props.item.desc}</p>
-                <b>{this.props.item.price}P</b>
-            </div>
-        )
-    }
-}
+const Item = ({ item, onAddToCart }) => {
+  return (
+    <Card className="item-card h-100">
+      <Card.Img 
+        variant="top" 
+        src={`/img/${item.img}`}  // ← ИЗМЕНИТЕ С /images/ НА /img/
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.src = 'https://via.placeholder.com/300x200?text=Нет+изображения';
+        }}
+        style={{ height: '200px', objectFit: 'cover' }}
+      />
+      <Card.Body>
+        <Card.Title>{item.title}</Card.Title>
+        <Card.Text className="description">
+          {item.description}
+        </Card.Text>
+        <Card.Text className="category text-muted">
+          {item.category}
+        </Card.Text>
+        <Card.Text className="price h4 text-primary">
+          {item.price} ₽
+        </Card.Text>
+        <Button 
+          variant="primary" 
+          onClick={() => onAddToCart(item.id)}
+          className="w-100"
+        >
+          В корзину
+        </Button>
+      </Card.Body>
+    </Card>
+  );
+};
 
-export default Item
+export default Item;
